@@ -102,7 +102,7 @@
     <iframe id="frame" width="100%" height="100%" frameborder="0"></iframe>
     <script>
         window.onload = function () {
-
+            console.log('window.onload');
             const vscode = acquireVsCodeApi();
             const cmds = {
                 setIframeSrc: function (message) {
@@ -125,6 +125,7 @@
             };
 
             window.addEventListener("message", (event) => {
+                console.log('event---event', event);
                 const message = event.data;
                 if (message && message.cmd) cmds[message.cmd](message);
             });

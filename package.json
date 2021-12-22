@@ -1,12 +1,17 @@
 {
-    "name": "code-builder",
-    "displayName": "code-builder",
+    "name": "weidian-code-builder",
+    "displayName": "weidian-code-builder",
     "description": "代码生成器的vscode页面插件",
     "version": "0.0.1",
     "license": "MIT",
     "engines": {
         "vscode": "^1.63.0"
     },
+    "author": {
+        "name": "xuchongyu",
+        "email": "18763006837@163.com"
+    },
+    "publisher": "weidian-code-builder",
     "categories": [
         "Other"
     ],

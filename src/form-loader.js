@@ -4,7 +4,7 @@ const path = require('path')
 const open = require('open')
 // db.json的文件地址
 const dbFilePath = path.join(__dirname, './db.json')
-
+// 技术参考来自于 http://blog.haoji.me/vscode-plugin-webview.html
 const callbacks = {
     writeFile(message, vscode, dirPath) {
         const { fileName, code } = message.data
@@ -26,6 +26,12 @@ const callbacks = {
         open(message.data.url)
     },
 }
+/**
+ * 获取某个扩展文件相对于webview需要的一种特殊路径格式
+ * 形如：vscode-resource:/Users/toonces/projects/vscode-cat-coding/media/cat.gif
+ * @param context 上下文
+ * @param relativePath 扩展中某个文件相对于根目录的路径，如 images/test.jpg
+ */
 function getExtensionFileAbsolutePath(context, relativePath) {
     return path.join(context.extensionPath, relativePath)
 }
@@ -86,6 +92,7 @@ const formLoader = (context, uri) => {
             statusBarItem.hide()
         }
     })
+
     // 设置 webview 的主题html
     webviewPanel.webview.html = getWebViewContent(
         context,
@@ -102,7 +109,7 @@ const formLoader = (context, uri) => {
             db: JSON.parse(fs.readFileSync(dbFilePath).toString() || '{}'),
         },
     })
-    // 接受通讯
+    // 接收通讯
     webviewPanel.webview.onDidReceiveMessage(
         (message) => {
             if (message.cmd && message.data) {
