@@ -6,14 +6,14 @@ const open = require('open')
 const dbFilePath = path.join(__dirname, './db.json')
 // 技术参考来自于 http://blog.haoji.me/vscode-plugin-webview.html
 const callbacks = {
-    writeFile(message, vscode, dirPath) {
+    writeFile: async (message, vscode, dirPath) => {
         const { fileName, code } = message.data
         const filePath = path.join(dirPath, fileName)
-        fs.writeFileSync(filePath, code)
+        await fs.writeFileSync(filePath, code)
         vscode.window.showInformationMessage(`文件${fileName}创建成功`)
     },
 
-    setStorageItem(message, _vscode, _dirPath) {
+    setStorageItem: (message, _vscode, _dirPath) => {
         const { key, val } = message.data
         const dbContent = fs.readFileSync(dbFilePath).toString()
         if (dbContent) {
@@ -22,7 +22,7 @@ const callbacks = {
             fs.writeFileSync(dbFilePath, JSON.stringify(json))
         }
     },
-    openUrl(message, _vscode, _dirPath) {
+    openUrl: (message, _vscode, _dirPath) => {
         open(message.data.url)
     },
 }
@@ -41,8 +41,10 @@ function getExtensionFileAbsolutePath(context, relativePath) {
  * @param {*} templatePath 相对于插件根目录的html文件相对路径
  */
 function getWebViewContent(context, templatePath) {
+    // 文件的绝对地址
     const resourcePath = getExtensionFileAbsolutePath(context, templatePath)
-    const targetPath = path.dirname(resourcePath)
+    // 文件夹的绝对地址
+    const documentPath = path.dirname(resourcePath)
     let html = fs.readFileSync(resourcePath, 'utf-8')
     // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
     html = html.replace(
@@ -50,7 +52,7 @@ function getWebViewContent(context, templatePath) {
         (m, $1, $2) => {
             return (
                 $1 +
-                vscode.Uri.file(path.resolve(targetPath, $2))
+                vscode.Uri.file(path.resolve(documentPath, $2))
                     .with({ scheme: 'vscode-resource' })
                     .toString() +
                 '"'
@@ -64,16 +66,25 @@ const formLoader = (context, uri) => {
         vscode.window.showInformationMessage(`无法获取文件夹路径`)
         return
     }
-    // 右键 目标文件的绝对地址
-    let targetPath = uri.fsPath
-    // 通过路径 查找文件相关的属性
-    const stats = fs.lstatSync(targetPath)
-    // 判断 文件相关的属性 的 isFile 是不是文件 如果是 就将文件地址保存下来 作为后面的参数使用
-    if (stats.isFile()) targetPath = path.dirname(targetPath)
+    /*记录要保存的文件夹地址 begin*/
 
+    // 文件夹地址
+    let folderPath
+    // 右键点击 可能是文件或者是文件夹
+    const documentOrFolderPath = uri.fsPath
+    // 通过路径 查找文件相关的属性
+    const documentOrFolderOption = fs.lstatSync(documentOrFolderPath)
+    // 判断 文件相关的属性 的 isFile 是不是文件 如果是 就将文件地址保存下来 作为后面的参数使用
+    if (documentOrFolderOption.isFile()) {
+        folderPath = path.dirname(documentOrFolderPath)
+    } else {
+        folderPath = documentOrFolderPath
+    }
+    /*记录要保存的文件夹地址 end*/
     const statusBarItem = vscode.window.createStatusBarItem()
-    statusBarItem.text = `目标文件夹：${targetPath}`
+    statusBarItem.text = `目标文件夹：${folderPath}`
     statusBarItem.show()
+
     // 创建 webview 容器
     const webviewPanel = vscode.window.createWebviewPanel(
         'formMaker',
@@ -100,7 +111,7 @@ const formLoader = (context, uri) => {
     )
 
     webviewPanel.webview.postMessage({
-        cmd: 'setIframeSrc',
+        cmd: 'setPageUrl',
         data: {
             src:
                 vscode.workspace.getConfiguration().get('FormMaker.url') +
@@ -114,7 +125,7 @@ const formLoader = (context, uri) => {
         (message) => {
             if (message.cmd && message.data) {
                 const method = callbacks[message.cmd]
-                if (method) method(message, vscode, targetPath)
+                if (method) method(message, vscode, folderPath)
             } else {
                 vscode.window.showInformationMessage(`没有与消息对应的方法`)
             }

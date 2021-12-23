@@ -102,10 +102,10 @@
     <iframe id="frame" width="100%" height="100%" frameborder="0"></iframe>
     <script>
         window.onload = function () {
-            console.log('window.onload');
             const vscode = acquireVsCodeApi();
             const cmds = {
-                setIframeSrc: function (message) {
+                // 接收  接收vscode的通讯
+                setPageUrl: function (message) {
                     const frame = document.getElementById("frame");
                     frame.src = message.data.src;
                     frame.onload = function () {
