@@ -1,8 +1,8 @@
 {
-    "name": "weidian-code-builder",
+    "name": "vd-code-builder",
     "displayName": "weidian-code-builder",
     "description": "代码生成器的vscode页面插件",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "MIT",
     "engines": {
         "vscode": "^1.63.0"
@@ -11,10 +11,14 @@
         "name": "xuchongyu",
         "email": "18763006837@163.com"
     },
-    "publisher": "weidian-code-builder",
+    "publisher": "xuchongyu",
     "categories": [
         "Other"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ChongYu-Yease/code-builder-vscode-plugin.git"
+    },
     "activationEvents": [
         "onCommand:extension.openFormMaker"
     ],
