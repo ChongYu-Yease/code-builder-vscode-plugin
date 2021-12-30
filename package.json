@@ -1,9 +1,9 @@
 {
-    "name": "vd-code-builder",
+    "name": "lazy-code-builder",
     "icon": "images/icon.jpeg",
     "displayName": "懒人代码生成器",
     "description": "表单代码生成器，解放双手，提升生产力",
-    "version": "0.0.2",
+    "version": "0.0.1",
     "license": "MIT",
     "engines": {
         "vscode": "^1.63.0"
