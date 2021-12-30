@@ -81,8 +81,10 @@ const formLoader = (context, uri) => {
         folderPath = documentOrFolderPath
     }
     /*记录要保存的文件夹地址 end*/
+    // 创建vscode 下面的状态栏
     const statusBarItem = vscode.window.createStatusBarItem()
     statusBarItem.text = `目标文件夹：${folderPath}`
+    statusBarItem.color = 'yellow'
     statusBarItem.show()
 
     // 创建 webview 容器
@@ -98,8 +100,10 @@ const formLoader = (context, uri) => {
 
     webviewPanel.onDidChangeViewState((_e) => {
         if (webviewPanel.visible) {
+            // webview 容器存在 状态栏就展示
             statusBarItem.show()
         } else {
+            // webview 容器消失 状态栏就消失
             statusBarItem.hide()
         }
     })
