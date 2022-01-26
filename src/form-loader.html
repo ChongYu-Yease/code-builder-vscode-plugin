@@ -112,6 +112,7 @@
                         document.getElementById("pre-loader").style.display = "none";
                         frame.style.display = "block";
                     };
+
                 },
                 writeFile: function (message) {
                     vscode.postMessage(message);
@@ -125,7 +126,7 @@
             };
 
             window.addEventListener("message", (event) => {
-                console.log('event---event', event);
+
                 const message = event.data;
                 if (message && message.cmd) cmds[message.cmd](message);
             });
